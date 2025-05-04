@@ -49,7 +49,7 @@ Pow_ChkShoes:
 		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
 		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
-		move.w	#bgm_Speedup,d0
+		move.w	#bgm_Scary,d0	; Scary music
 		jmp	(PlaySound).l		; Speed	up the music
 ; ===========================================================================
 
@@ -102,38 +102,35 @@ KAI_PowerUp_Checks:
 		lea	(v_player).w,a0
 		cmp.b	#id_Death,obAnim(a0)
 		beq .done
-		cmp.b	#1,(v_invinc).w
-		beq .done
 		movem.w SR_Invinc_in,d0-d7
-		cmp.b d0,d1 ; compare used-in, looking for negative
-		blo .doInvinc
+		tst.b	(v_invinc).w
+		bne.s	.alreadyShielded
+		cmp.b	d0,d1 ; compare used-in, looking for negative
+		blo.s	.doInvinc
 		; Do we need to kill Sonic?
-		cmp.b d6,d7 ; compare used-in, looking for negative
-		blo .doDeathL
+		cmp.b	d6,d7 ; compare used-in, looking for negative
+		blo.s	.doDeathL
 		; How about a shield?
-		cmp.b #1,(v_shield).w
-		beq .alreadyShielded
-		cmp.b d2,d3 ; compare used-in, looking for negative
-		blo .doShield
+		tst.b	(v_shield).w
+		bne.s	.alreadyShielded
+		cmp.b	d2,d3 ; compare used-in, looking for negative
+		blo.s	.doShield
 .alreadyShielded:
-		cmp.b #1,(v_shoes).w
-		beq .done
-		cmp.b d4,d5 ; compare used-in, looking for negative
-		blo .doShoes
+		tst.b	(v_shoes).w
+		bne.s	.done
+		cmp.b	d4,d5 ; compare used-in, looking for negative
+		blo.s	.doShoes
 .done:
 		rts
 .doInvinc:
-		addi.b #1,(SR_Invinc_out)
-		bra Pow_ChkInvinc
+		addi.w	#1,(SR_Invinc_out)
+		bra	Pow_ChkInvinc
 .doDeathL:
-		move.w d6,(SR_DeathL_out)
+		move.w	d6,(SR_DeathL_out)
 		jmp	(KillSonicNoCount).l
 .doShield:
-		addi.b #1,(SR_Shield_out)
-		bra Pow_ChkShield
+		addi.w	#1,(SR_Shield_out)
+		bra	Pow_ChkShield
 .doShoes:
-		addi.b #1,(SR_SpeedS_out)
-		bra Pow_ChkShoes
-
-; Padding
-		dc.w 1,2
+		addi.w	#1,(SR_SpeedS_out)
+		bra	Pow_ChkShoes

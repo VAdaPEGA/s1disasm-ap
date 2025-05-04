@@ -31,6 +31,10 @@ Sonic_LoadGfx:
 		move.b	(a2)+,d2
 		lsl.w	#5,d2
 		lea	(Art_Sonic).l,a1
+		tst.b	(v_shoes).w	; check for speed shoes
+		beq.s	.noshoes
+		lea	(Art_ScarySonic).l,a1
+	.noshoes:
 		adda.l	d2,a1
 
 .loadtile:

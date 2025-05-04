@@ -22,9 +22,16 @@ Sonic_Water:
 		bsr.w	ResumeMusic
 		move.b	#id_DrownCount,(v_sonicbubbles).w ; load bubbles object from Sonic's mouth
 		move.b	#$81,(v_sonicbubbles+obSubtype).w
-		move.w	#$300,(v_sonspeedmax).w ; change Sonic's top speed
-		move.w	#6,(v_sonspeedacc).w ; change Sonic's acceleration
-		move.w	#$40,(v_sonspeeddec).w ; change Sonic's deceleration
+		move.w	#$300,(v_sonspeedmax).w	; change Sonic's top speed
+		move.w	#6,(v_sonspeedacc).w	; change Sonic's acceleration
+		move.w	#$40,(v_sonspeeddec).w	; change Sonic's deceleration
+
+		tst.b	(v_shoes).w	; does Sonic have speed	shoes?
+		beq.s	.noShoes	; if not, branch
+		move.w	#$C00/2,(v_sonspeedmax).w	; change Sonic's top speed
+		move.w	#$18/2,(v_sonspeedacc).w	; change Sonic's acceleration
+		move.w	#$80/2,(v_sonspeeddec).w	; change Sonic's deceleration
+	.noShoes:
 		asr	obVelX(a0)
 		asr	obVelY(a0)
 		asr	obVelY(a0)	; slow Sonic
@@ -41,6 +48,14 @@ Sonic_Water:
 		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
 		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
+
+		tst.b	(v_shoes).w	; does Sonic have speed	shoes?
+		beq.s	.noShoes2	; if not, branch
+		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
+		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
+		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
+	.noShoes2:
+
 		asl	obVelY(a0)
 		beq.w	.exit
 		move.b	#id_Splash,(v_splash).w ; load splash object

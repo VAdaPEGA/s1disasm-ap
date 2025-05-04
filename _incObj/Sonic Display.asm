@@ -23,19 +23,10 @@ Sonic_Display:
 		bne.s	.removeinvincible
 		cmpi.w	#$C,(v_air).w
 		blo.s	.removeinvincible
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w ; check if level is SBZ3
-		bne.s	.music
-		moveq	#5,d0		; play SBZ music
-
-.music:
-		lea	(MusicList2).l,a1
-		move.b	(a1,d0.w),d0
-		jsr	(PlaySound).l	; play normal music
+		bsr.s	.normalmusic
 
 .removeinvincible:
-		move.b	#0,(v_invinc).w ; cancel invincibility
+		sf	(v_invinc).w ; cancel invincibility
 
 .chkshoes:
 		tst.b	(v_shoes).w	; does Sonic have speed	shoes?
@@ -44,12 +35,30 @@ Sonic_Display:
 		beq.s	.exit
 		subq.w	#1,shoetime(a0)	; subtract 1 from time
 		bne.s	.exit
+		sf	(v_shoes).w	; cancel speed shoes
 		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
 		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
-		move.b	#0,(v_shoes).w	; cancel speed shoes
-		move.w	#bgm_Slowdown,d0
-		jmp	(PlaySound).l	; run music at normal speed
-
+		btst	#6,obStatus(a0)	; is player underwater?
+		beq.s	.normalmusic		; if not, branch
+		move.w	#$300,(v_sonspeedmax).w	; change Sonic's top speed
+		move.w	#6,(v_sonspeedacc).w	; change Sonic's acceleration
+		move.w	#$40,(v_sonspeeddec).w	; change Sonic's deceleration
+.normalmusic:	
+		moveq	#0,d0
+		tst.b	(v_shoes).w	; check for speed shoes
+		beq.s	.noshoes
+		move.w	#bgm_Scary,d0
+		bra.s	.playsound
+.noshoes:
+		move.b	(v_zone).w,d0
+		cmpi.w	#(id_LZ<<8)+3,(v_zone).w ; check if level is SBZ3
+		bne.s	.music
+		moveq	#5,d0		; play SBZ music
+.music:
+		lea	(MusicList2).l,a1
+		move.b	(a1,d0.w),d0
+.playsound:
+		jmp	(PlaySound).l	; play normal music
 .exit:
-		rts	
+		rts
