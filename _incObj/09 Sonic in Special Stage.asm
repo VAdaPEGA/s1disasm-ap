@@ -644,8 +644,15 @@ Obj09_GOAL:
 Obj09_UPblock:
 		cmpi.b	#$29,d0		; is the item an "UP" block?
 		bne.s	Obj09_DOWNblock
-		rts ; Woops, looks like I "accidentally" nuked the Up block to save space
-		nop
+		tst.b	objoff_36(a0)
+		bne.w	Obj09_NoGlass
+		move.b	#$1E,objoff_36(a0)
+		btst	#6,(v_ssrotate+1).w
+		beq.s	Obj09_UPsnd
+		asl	(v_ssrotate).w	; increase stage rotation speed
+		movea.l	objoff_32(a0),a1
+		subq.l	#1,a1
+		move.b	#$2A,(a1)	; change item to a "DOWN" block
 
 Obj09_UPsnd:
 		move.w	#sfx_SSItem,d0
@@ -687,8 +694,8 @@ Obj09_RevStage:
 		cmpi.b #$01,(SR_BuffDisR+1).l
 		beq.s .oof
 		neg.w	(v_ssrotate).w	; reverse stage rotation
-		move.w	#sfx_SSItem,d0
 .oof
+		move.w	#sfx_SSItem,d0
 		jmp	(PlaySound_Special).l	; play sound
 ; ===========================================================================
 
