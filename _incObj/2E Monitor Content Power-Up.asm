@@ -99,9 +99,11 @@ Pow_Delete:	; Routine 4
 
 ; All but a1 registers are fair game.
 KAI_PowerUp_Checks:
+		tst.b	(v_gamemode).w	; is title card still playing?
+		bmi.s	.done		; if so, branch
 		lea	(v_player).w,a0
 		cmp.b	#id_Death,obAnim(a0)
-		beq .done
+		beq.s	.done
 		movem.w SR_Invinc_in,d0-d7
 		tst.b	(v_invinc).w
 		bne.s	.alreadyShielded
