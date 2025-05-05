@@ -23,9 +23,7 @@ Pow_Main:	; Routine 0
 		move.w	#-$300,obVelY(a0)
 		move.b	#8,obFrame(a0)	; use correct frame
 		; Ugly hack to save a bunch of space, this is the address of the ring monitor spriteimage
-		lea	(Map_Monitor_internal.rings),a1
-		addq.w	#1,a1
-		move.l	a1,obMap(a0)
+		move.l	#(Map_Monitor_internal.rings+1),obMap(a0)
 
 Pow_Move:	; Routine 2
 		tst.w	obVelY(a0)	; is object moving?
@@ -101,8 +99,7 @@ Pow_Delete:	; Routine 4
 KAI_PowerUp_Checks:
 		tst.b	(v_gamemode).w	; is title card still playing?
 		bmi.s	.done		; if so, branch
-		lea	(v_player).w,a0
-		cmp.b	#id_Death,obAnim(a0)
+		cmpi.b	#id_Death,(v_player+obAnim).w
 		beq.s	.done
 		movem.w SR_Invinc_in,d0-d7
 		tst.b	(v_invinc).w
