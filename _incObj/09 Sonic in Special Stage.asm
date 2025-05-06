@@ -691,10 +691,9 @@ Obj09_Rblock:
 		move.l	d0,4(a2)
 
 Obj09_RevStage:
-		cmpi.b #$01,(SR_BuffDisR+1).l
-		beq.s .oof
+		cmpi.b	#$01,(SR_BuffDisR+1).l
+		beq.s	Obj09_NoGlass
 		neg.w	(v_ssrotate).w	; reverse stage rotation
-.oof
 		move.w	#sfx_SSItem,d0
 		jmp	(PlaySound_Special).l	; play sound
 ; ===========================================================================
