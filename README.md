@@ -1,52 +1,70 @@
-S1 Archipelago patch
+S1 Personalized Hecc Archipelago
 ====================
 
-This is based on s1disasm_git, changes in this branch are my work but only that.  For the purpose of the Archipelago experience, the following changes have been made:
+Based on Kaithar's S1 Archipelago
 
-- Sonic doesn't lose lives when dying.
-- SRAM has been enabled to persist AP data between runs.
-- Press C on a pause screen to immediately exit whatever level you're in.
-- The inital start screen is removed in favour of direct to Level Select
-- Since the start screen is gone, the Demo loop is also gone.
-- Level Select has been overhauled to display the AP data so you can tell where to hunt.
-- Level Select level order corrected, obviously.
-- Due to how AP gives you rings, and space constraints, Sonic always drops 6 rings when hurt.
-- For sanity, you don't get extra lives when you exceed 100 rings.  Your ears should be grateful.
-- The top 50 ring secret route in SBZ2 is disabled.  There's no checks up there.
-- Spike damage is now slightly less terrible.
-- Monitors in MZ3 without state save and monitors in SBZ2 that should have been invis blocks have been corrected.
-- Because AP, a mechanism for monitor state persistance is added.
-- Because AP, content of monitors are all now 10 rings.  Sorry.
-- Because AP, Special Stages are played strictly in order until completed.
-- Because AP, Special Stages completion and emeralds are divorced. AP got the emeralds.
-- Because AP, boss completes are recorded now.
-- Because AP, each set of zones are gated to AP key items.
-- Special Stage: Don't offer special stage at the end of a level.
-- Special Stage: Return to menu after exit.
-- Special Stage: AP-toggled deactivation of Goal blocks, they turn into normal on touch.
-- Special Stage: For byte alignment reasons, the UP block is now disabled.
-- Special Stage: Continues jingle removed, result screen delay reduced from 6s to 1s
-- Special Stage: Special stages are also gated to AP key items.
-- Technical change (you won't see): Monitor objects have had the item field replaced with an id 
-- QoL ReadySonic change change: Scuffed SpinDash based on ReadySonic.  And due to dependency...
-- QoL ReadySonic change: Sonic incorrectly use his walking animation when near solids.
-- QoL ReadySonic change: Sonic use his pushing animation while walking away from walls
-- QoL ReadySonic change: Fixes problems with camera not catching up at high speeds, as well preventing Sonic from dying in these situations (notably in the S-tunnels in GHZ1 and GHZ3).
-- QoL ReadySonic change: Roll into Caterkiller
+This branch of the S1 Archipelago that mainly aims to bring some of the media from my past works into the pool as traps or upgrades.
+Additionally it aims to add abiities and quality of life features that would otherwise not be allowed in the main Archipelago branch due to breaking derivative work rules.
 
-The details and theories of Archipelago mode:
-- Each monitor in the game is an AP check. Completing the level doesn't release the level.
-- Monitors stay broken, to help you track which you need to break.
-- Emeralds are AP items, other people need to find them for you.
-- Special stages contain a check instead of an emerald.
-- Bosses trigger a check the first time you kill them.
-- Infinite lives but not invulnerable.
-- Once people find some of your rings you're safe from all but instant kills.
-- Given S1 specials are kinda miserable to play, they're nerfed quite a bit.
+Do **NOT** link to this Github in the official Archipelago Discord server
 
-At the moment I don't have any checks attached to the lamp posts.  I might add such thing in if things seem too easy.
-
-To clear the game from AP's perspective you need to beat the bosses and beat the 6 specials.
+Roadmap
+=======
+This is what is currently planned for this project
+### Upgrades and Power-ups
+ - Player
+   - Progressive jump height (tiny hop > Knuckles > Sonic > Double jump (optional))
+   - Progressive spin (no spin > spin > CD spindash > S2+ spindash > (optional))
+   - Progressive spike immunity (insta kill > vanilla > S2+ behaviour)
+   - Progressive top speed
+   - Progressive acceleration
+   - Roll-lock prevention
+   - Peel-out
+   - Sticky floor (temporary)
+   - Swim (optional)
+ - Switches
+ - Progressive Bubble Spawner (No Bubbles > Vanilla > Always Spawn when standing on (optional))
+ - SBZ2 DisK to Orbs (optional)
+### Traps
+ - Honker rant (Gatoslip)
+ - Jump sound swap (permanent)
+   - SMB
+   - SMW
+   - S2 Master System
+   - Megaman (just the landing sound)
+ - Skin Swap
+   - Very Useful Engine (comes with music)
+   - Boom (comes with samples)
+   - Pantufa (2011 version)
+   - Rock
+ - Ring Swap (permanent)
+   - Ring (rotates vertically)
+   - Wumpa fruit
+   - Rupees
+   - Coin
+   - Chocolate Ring
+   - Coing (Pantufa : Extended Edition)
+ - Pacman Arrangement (Sinewave ring swaying)
+ - Special Stage traps
+   - SS Golf trap (apeeling / R4/2)
+   - SS Rotation trap
+     - 1/32
+     - 1/16
+     - 1/8
+     - 1/4 + Nibble
+     - Reverse Gravity
+ - Advertisement (EA)
+### Extra Zones
+ - Pantufa (2011)
+ - Salad Plain (I made you a Salad)
+### Optional features
+ - Badnik Randomizer
+ - Lamp-Post Randomizer (similar to SML2's)
+### Misc. changes
+ - Pause menu
+   - Allows mid-level use of Power-ups
+ - Minigames to gain Power-ups (requires at least 1 of the Power-Ups to be obtained)
+ - Faster decompression routines
 
 s1disasm_git
 ============
