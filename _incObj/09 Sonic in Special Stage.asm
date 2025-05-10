@@ -633,12 +633,13 @@ Obj09_GOAL:
 		movea.l	objoff_32(a0),a1
 		subq.l	#1,a1
 		move.b	#$2C,(a1)	; replace goalblock with a solid block
-		rts
+		move.w	#sfx_SSDisabled,d0
+		bra.s	.oof2
 .oof
 		addq.b	#2,obRoutine(a0) ; run routine "Obj09_ExitStage"
 		move.w	#sfx_SSGoal,d0
-		jsr	(PlaySound_Special).l	; play "GOAL" sound
-		rts	
+.oof2:
+		jmp	(PlaySound_Special).l	; play "GOAL" sound
 ; ===========================================================================
 
 Obj09_UPblock:
@@ -691,10 +692,12 @@ Obj09_Rblock:
 		move.l	d0,4(a2)
 
 Obj09_RevStage:
+		move.w	#sfx_SSDisabled,d0
 		cmpi.b	#$01,(SR_BuffDisR+1).l
-		beq.s	Obj09_NoGlass
+		beq.s	.Disabled
 		neg.w	(v_ssrotate).w	; reverse stage rotation
 		move.w	#sfx_SSItem,d0
+	.Disabled:
 		jmp	(PlaySound_Special).l	; play sound
 ; ===========================================================================
 

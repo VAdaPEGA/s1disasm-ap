@@ -658,25 +658,18 @@ PlaySoundID:
 		beq.w	StopAllSound
 		bpl.s	.locret			; If >= 0, return (not a valid sound, bgm or command)
 		move.b	#$80,v_sound_id(a6)	; reset	music flag
-		cmpi.b	#bgm__Last,d7	; Is this music ($81-$93)?
+		cmpi.b	#bgm__Last,d7		; Is this music?
 		bls.w	Sound_PlayBGM		; Branch if yes
 		cmpi.b	#sfx__First,d7		; Is this after music but before sfx? (redundant check)
 		blo.w	.locret			; Return if yes
-		cmpi.b	#sfx__Last,d7		; Is this sfx ($A0-$CF)?
+		cmpi.b	#sfx__Last,d7		; Is this sfx?
 		bls.w	Sound_PlaySFX		; Branch if yes
 		cmpi.b	#spec__First,d7		; Is this after sfx but before special sfx? (redundant check)
 		blo.w	.locret			; Return if yes
-	if FixBugs
-		cmpi.b	#spec__Last,d7		; Is this special sfx ($D0-$D0)?
+		cmpi.b	#spec__Last,d7		; Is this special sfx?
 		bls.w	Sound_PlaySpecial	; Branch if yes
 		cmpi.b	#flg__First,d7		; Is this after special sfx but before $E0?
 		blo.w	.locret			; Return if yes
-	else
-		; DANGER! Special SFXes end at $D0, yet this checks until $DF; attempting to
-		; play sounds $D1-$DF will cause a crash!
-		cmpi.b	#spec__Last+$10,d7	; Is this special sfx ($D0-$DF)?
-		blo.w	Sound_PlaySpecial	; Branch if yes
-	endif
 		cmpi.b	#flg__Last,d7		; Is this $E0-$E4?
 		bls.s	Sound_E0toE4		; Branch if yes
 ; locret_71F8C:
@@ -2665,6 +2658,7 @@ ptr_sndCC:	dc.l SoundCC
 ptr_sndCD:	dc.l SoundCD
 ptr_sndCE:	dc.l SoundCE
 ptr_sndCF:	dc.l SoundCF
+ptr_sndSSDisabled:	dc.l SoundSSDisabled
 ptr_sndend
 
 ; ---------------------------------------------------------------------------
@@ -2772,6 +2766,8 @@ SoundCD:	include	"sound/sfx/SndCD - Switch.asm"
 SoundCE:	include	"sound/sfx/SndCE - Ring Left Speaker.asm"
 		even
 SoundCF:	include	"sound/sfx/SndCF - Signpost.asm"
+		even
+SoundSSDisabled:	include	"sound/sfx_custom/SS Item Disabled.asm"
 		even
 
 ; ---------------------------------------------------------------------------
