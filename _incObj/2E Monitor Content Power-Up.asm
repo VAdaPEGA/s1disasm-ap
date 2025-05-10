@@ -126,6 +126,7 @@ KAI_PowerUp_Checks:
 		bra	Pow_ChkInvinc
 .doDeathL:
 		move.w	d6,(SR_DeathL_out)
+		lea	(v_player),a0	
 		jmp	(KillSonicNoCount).l
 .doShield:
 		addi.w	#1,(SR_Shield_out)
