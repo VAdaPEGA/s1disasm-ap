@@ -2444,103 +2444,88 @@ LevSel_Credits:
 		move.b	#bgm_Credits,d0
 		rts	
 ; ===========================================================================
-
-; For the nth time, let's try to get this right...
-; SR_SSGate can be be just about anything, let's say 0x0D 
-; In this case, we *can't* enter the second SS, cause 0xD = b1101
-; SR_Specials is what we've beaten.  Let's say 0x01
-; We can't just compare them because the gate can have gaps.  Specials can't.
-; So, add one to specials (0x2) then AND that against gate (0x0) and we fail if it's zero
-; This *only* works because Specials can't be completed out of order.
-
+; ---------------------------------------------------------------------------
+; Level	select - level pointers
+; ---------------------------------------------------------------------------
+LevSel_Ptrs:
+		;	Zone,	Key+Act
+		dc.b	id_GHZ,	$00+0
+		dc.b	id_GHZ,	$00+1
+		dc.b	id_GHZ,	$00+2
+		dc.b	id_MZ,	$10+0
+		dc.b	id_MZ,	$10+1
+		dc.b	id_MZ,	$10+2
+		dc.b	id_SYZ,	$20+0
+		dc.b	id_SYZ,	$20+1
+		dc.b	id_SYZ,	$20+2
+		dc.b	id_LZ,	$30+0
+		dc.b	id_LZ,	$30+1
+		dc.b	id_LZ,	$30+2
+		dc.b	id_SLZ,	$40+0
+		dc.b	id_SLZ,	$40+1
+		dc.b	id_SLZ,	$40+2
+		dc.b	id_SBZ,	$50+0
+		dc.b	id_SBZ,	$50+1
+		dc.b	id_LZ,	$50+3		; Scrap Brain Act 3
+		dc.b	id_SBZ,	$60+2		; Final Zone
+		dc.b	id_SS,	0		; Special Stage (no key needed)
+		even
+; ===========================================================================
 LevSel_Level_SS:
-		move.b (SR_Specials+1), d2
-		addi.b #1,d2
 		add.w	d0,d0
-		move.w	LevSel_Ptrs(pc,d0.w),d0 ; load level number
+		move.w	LevSel_Ptrs(pc,d0.w),d0	; load level number
 		bmi.w	LevelSelect
-		move d0,d1
-		lsr #4,d1
-		btst d1,(SR_LevelGate+1)
-		beq.w LevelSelect
-		andi.b #$0F,d0
-		cmpi.w	#id_SS*$100,d0	; check	if level is 0700 (Special Stage)
-		bne.s	LevSel_Level	; if not, branch
-		and.b (SR_SSGate+1),d2
-		beq.w LevelSelect
+
+		cmpi.w	#id_SS*$100,d0		; check	if level is 0700 (Special Stage)
+		bne.s	LevSel_Level		; if not, branch
+
+		moveq	#0,d0
+		moveq	#6-1,d7	; loop 6 times for each special stage
+		move.b	(SR_Specials+1),d1	; SS beaten
+		move.b	(SR_SSGate+1),d2	; SS unlocked
+	.loop:
+		btst	d0,d2		; compare with Key
+		beq.s	.NotUnlocked	; if we don't have key, branch
+		btst	d0,d1		; compare with Stages Beaten
+		beq.s	.UnbeatenSpecialStageFound
+		addq.b	#1,d0		; compare next
+		dbf	d7,.loop	; ideally, we'd work backwards with bit 5 being stage 1, but this will do for now
+	.NotUnlocked:
+		; funny sound can be added here so the player is aware they're being denied
+		bra.w	LevelSelect
+
+	.UnbeatenSpecialStageFound:
 		move.b	#id_Special,(v_gamemode).w ; set screen mode to $10 (Special Stage)
 		clr.w	(v_zone).w	; clear	level
-		;move.b	#3,(v_lives).w	; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
 		move.l	d0,(v_score).w	; clear score
-		if Revision<>0
-			move.l	#5000,(v_scorelife).w ; extra life is awarded at 50000 points
-		endif
-		rts	
+		rts
 ; ===========================================================================
 
 LevSel_Level:
-		andi.w	#$3FFF,d0
-		move.w	d0,(v_zone).w	; set level number
+		move.w	d0,d1
+		and.w	#$00F0,d1
+		lsr.w	#4,d1		; This hackey workaround only exists because the internal level order differs from the final
+		btst	d1,(SR_LevelGate+1)	; check if level has been unlocked
+		beq.w	LevelSelect		; if not, branch
 
+		andi.w	#$3F0F,d0	; mask bytes
+		move.w	d0,(v_zone).w	; set level number
 PlayLevel:
 		moveq	#0,d0
 		move.b	#3,(v_lives).w	; set lives to 3
 		move.b	#id_Level,(v_gamemode).w ; set screen mode to $0C (level)
 		move.l	d0,(v_time).w	; clear time
 		move.l	d0,(v_score).w	; clear score
-		move.l	d0,(v_emldlist+4).w ; clear emeralds
-		move.b	d0,(v_emeralds).w ; clear emeralds
-		move.b	d0,(v_rings).w ; clear rings
-		move.b (SR_RingsFound+1).l,(v_rings).w ; then set to AP source
-		if Revision<>0
-			move.l	#5000,(v_scorelife).w ; extra life is awarded at 50000 points
-		endif
+		move.l	d0,(v_emldlist+4).w	; clear emeralds
+		move.b	d0,(v_emeralds).w	; clear emeralds
+		move.b	d0,(v_rings).w	; clear rings
+		move.b	(SR_RingsFound+1).l,(v_rings).w ; then set to AP source
 		move.b	#bgm_Fade,d0
 		bsr.w	PlaySound_Special ; fade out music
 		rts
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Level	select - level pointers
-; ---------------------------------------------------------------------------
-LevSel_Ptrs:
-		; correct level order
-		dc.b id_GHZ, $00
-		dc.b id_GHZ, $01
-		dc.b id_GHZ, $02
-		dc.b id_MZ, $10
-		dc.b id_MZ, $11
-		dc.b id_MZ, $12
-		dc.b id_SYZ, $20
-		dc.b id_SYZ, $21
-		dc.b id_SYZ, $22
-		dc.b id_LZ, $30
-		dc.b id_LZ, $31
-		dc.b id_LZ, $32
-		dc.b id_SLZ, $40
-		dc.b id_SLZ, $41
-		dc.b id_SLZ, $42
-		dc.b id_SBZ, $50
-		dc.b id_SBZ, $51
-		dc.b id_LZ, $53
-		dc.b id_SBZ, $62
-		dc.b id_SS, $70		; Special Stage
-		dc.w $8000		; Sound Test
-		even
-; ---------------------------------------------------------------------------
-; Level	select codes
-; ---------------------------------------------------------------------------
-LevSelCode_J:	if Revision=0
-		dc.b btnUp,btnDn,btnL,btnR,0,$FF
-		else
-		dc.b btnUp,btnDn,btnDn,btnDn,btnL,btnR,0,$FF
-		endif
-		even
-
-LevSelCode_US:	dc.b btnUp,btnDn,btnL,btnR,0,$FF
-		even
 ; ===========================================================================
 
 ; ---------------------------------------------------------------------------
