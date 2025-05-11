@@ -30,27 +30,27 @@ zeroOffsetOptimization = 0	; if 1, makes a handful of zero-offset instructions s
 	include	"Macros.asm"
 
 		phase $00200000
-SR_HEAD:      ds.l 2
-SR_Monitors:  ds.w 196
-SR_Specials:  ds.w 1
-SR_Emeralds:  ds.w 1
-SR_Bosses:    ds.w 1
-SR_BuffGoals: ds.w 1
-SR_BuffDisR:  ds.w 1
-SR_RingsFound: ds.w 1
-SR_LevelGate: ds.w 1
-SR_SSGate:    ds.w 1
-SR_Invinc_in:  ds.w 1
-SR_Invinc_out: ds.w 1
-SR_Shield_in:  ds.w 1
-SR_Shield_out: ds.w 1
-SR_SpeedS_in:  ds.w 1
-SR_SpeedS_out: ds.w 1
-SR_DeathL_in:  ds.w 1
-SR_DeathL_out: ds.w 1
-SR_Deaths:     ds.w 1
-SR_Seed:      ds.w $20
-SR_Slot:      ds.w 1
+SR_HEAD:	ds.w	4	; Header
+SR_Monitors:	ds.w	196	; Monitor states
+SR_Specials:	ds.w	1	; Beaten Special Stage Bitfield
+SR_Emeralds:	ds.w	1	; Emerald Bitfield
+SR_Bosses:	ds.w	1	; Beaten Boss Bitfield
+SR_BuffGoals:	ds.w	1	; Disable SS Goal block flag 
+SR_BuffDisR:	ds.w	1	; Disable SS R Block flag (why aren't these on a bitfield? a btst isn't that intensive on a single frame)
+SR_RingsFound:	ds.w	1	; Rings received
+SR_LevelGate:	ds.w	1	; Level Bitfield
+SR_SSGate:	ds.w	1	; Unlocked Special Stage Bitfield
+SR_Invinc_in:	ds.w	1	; Invincibility received
+SR_Invinc_out:	ds.w	1	; Invincibility spent
+SR_Shield_in:	ds.w	1	; Shields received
+SR_Shield_out:	ds.w	1	; Shields spent
+SR_SpeedS_in:	ds.w	1	; Speed Shoes received
+SR_SpeedS_out:	ds.w	1	; Speed Shoes spent
+SR_DeathL_in:	ds.w	1	; Deaths received
+SR_DeathL_out:	ds.w	1	; Deaths spent
+SR_Deaths:	ds.w	1	; Deaths sent
+SR_Seed:	ds.w	$20	; Seed
+SR_Slot:	ds.w	1	; Slot number
 		dephase
 		!org 0
 ; ===========================================================================
