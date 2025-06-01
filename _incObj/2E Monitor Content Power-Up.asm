@@ -97,8 +97,6 @@ Pow_Delete:	; Routine 4
 
 ; All but a1 registers are fair game.
 KAI_PowerUp_Checks:
-		tst.b	(v_gamemode).w	; is title card still playing?
-		bmi.s	.done		; if so, branch
 		cmpi.b	#id_Death,(v_player+obAnim).w
 		beq.s	.done
 		movem.w SR_Invinc_in,d0-d7

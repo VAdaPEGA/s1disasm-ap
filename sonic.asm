@@ -620,18 +620,24 @@ VBla_Exit:
 		movem.l	(sp)+,d0-a6
 		rte	
 ; ===========================================================================
-VBla_Index:	dc.w VBla_00-VBla_Index, VBla_02-VBla_Index
-		dc.w VBla_04-VBla_Index, VBla_06-VBla_Index
-		dc.w VBla_08-VBla_Index, VBla_0A-VBla_Index
-		dc.w VBla_0C-VBla_Index, VBla_0E-VBla_Index
-		dc.w VBla_10-VBla_Index, VBla_12-VBla_Index
-		dc.w VBla_14-VBla_Index, VBla_16-VBla_Index
-		dc.w VBla_0C-VBla_Index
+VBla_Index:	dc.w VBla_00-VBla_Index	; lag frame
+		dc.w VBla_02-VBla_Index ; SEGA screen
+		dc.w VBla_04-VBla_Index ; Title Screen / Level Select / Credits / Try Again
+		dc.w VBla_06-VBla_Index
+		dc.w VBla_08-VBla_Index ; Main Level loop
+		dc.w VBla_0A-VBla_Index ; Special Stage
+		dc.w VBla_0C-VBla_Index ; Level load sequence / Special Stage exit
+		dc.w VBla_0E-VBla_Index ; unused
+		dc.w VBla_10-VBla_Index
+		dc.w VBla_12-VBla_Index ; Palette Fade Sequences
+		dc.w VBla_14-VBla_Index ; SEGA Screen during chant
+		dc.w VBla_16-VBla_Index ; Special stage end / Continue screen
+		dc.w VBla_0C-VBla_Index ; Ending sequence
 ; ===========================================================================
 
 VBla_00:
-		cmpi.b	#$80+id_Level,(v_gamemode).w
-		beq.s	.islevel
+		cmpi.b	#$80+id_Level,(v_gamemode).w	; is pre level sequence still going?
+		beq.s	.islevel			; if not, branch
 		cmpi.b	#id_Level,(v_gamemode).w ; is game on a level?
 		bne.w	VBla_Music	; if not, branch
 
@@ -781,7 +787,7 @@ VBla_0A:
 		rts	
 ; ===========================================================================
 
-VBla_0C:
+VBla_0C:	; used during level load sequence
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
@@ -811,7 +817,7 @@ VBla_0C:
 		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
 		bsr.w	LoadTilesAsYouMove
 		jsr	(AnimateLevelGfx).l
-		jsr	(HUD_Update).l
+		;jsr	(HUD_Update).l	there is no need to update HUD here
 		bsr.w	sub_1642
 		rts	
 ; ===========================================================================
