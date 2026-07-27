@@ -1,4 +1,4 @@
-S1 Personalized Hecc Archipelago
+Sloppy Thüringer Hotdogs (Formerly S1 Personalized Hecc Archipelago)
 ====================
 
 Based on Kaithar's S1 Archipelago
